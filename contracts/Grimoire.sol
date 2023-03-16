@@ -9,7 +9,7 @@ contract Grimoire  {
         address creator,
         address[] contributors,
         string[] revision_metadata_uris,
-        string reference_source_media_metadata_uri,
+        string metadata_uri,
         bytes32 id_request,
         string[] communities    
     );
@@ -28,7 +28,7 @@ contract Grimoire  {
         uint256 last_updated_at,
         address[] contributors,
         bytes32[] communities,
-        string reference_source_media_metadata_uri
+        string metadata_uri
     );*/
 
     event requestCreated(
@@ -62,7 +62,7 @@ contract Grimoire  {
         address creator;
         address[] contributors;
         string[] revision_metadata_uris;
-        string reference_source_media_metadata_uri;
+        string metadata_uri;
         bytes32 id_request;
         string[] communities;
         bool exists;
@@ -165,7 +165,7 @@ function deleteRequest(bytes32 request_id) public {
 function createTranscription(
    uint256 created_at,
    address[] memory  contributors,
-   string memory reference_source_media_metadata_uri,
+   string memory metadata_uri,
    bytes32 id_request,
    string[] calldata communities
 ) external {
@@ -186,7 +186,7 @@ function createTranscription(
         msg.sender,
         contributors,
         revision_metadata_uris,
-        reference_source_media_metadata_uri,
+        metadata_uri,
         id_request,
         communities,
         true
@@ -198,7 +198,7 @@ function createTranscription(
         msg.sender,
         contributors,
         revision_metadata_uris,
-        reference_source_media_metadata_uri,
+        metadata_uri,
         id_request,
         communities);
 }
