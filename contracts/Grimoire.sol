@@ -9,10 +9,9 @@ contract Grimoire  {
         address creator,
         address[] contributors,
         string[] revision_metadata_uris,
-        string reference_source_media,
         string reference_source_media_metadata_uri,
         bytes32 id_request,
-        bytes32[] communities    
+        string[] communities    
     );
 
     event transcriptDeleted(
@@ -63,10 +62,9 @@ contract Grimoire  {
         address creator;
         address[] contributors;
         string[] revision_metadata_uris;
-        string reference_source_media;
         string reference_source_media_metadata_uri;
         bytes32 id_request;
-        bytes32[] communities;
+        string[] communities;
         bool exists;
     }
 
@@ -167,10 +165,9 @@ function deleteRequest(bytes32 request_id) public {
 function createTranscription(
    uint256 created_at,
    address[] memory  contributors,
-   string memory reference_source_media,
    string memory reference_source_media_metadata_uri,
    bytes32 id_request,
-   bytes32[] calldata communities
+   string[] calldata communities
 ) external {
     bytes32 transcription_id = keccak256(
         abi.encodePacked(
@@ -189,7 +186,6 @@ function createTranscription(
         msg.sender,
         contributors,
         revision_metadata_uris,
-        reference_source_media,
         reference_source_media_metadata_uri,
         id_request,
         communities,
@@ -202,7 +198,6 @@ function createTranscription(
         msg.sender,
         contributors,
         revision_metadata_uris,
-        reference_source_media,
         reference_source_media_metadata_uri,
         id_request,
         communities);
