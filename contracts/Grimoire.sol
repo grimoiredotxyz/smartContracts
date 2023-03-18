@@ -86,9 +86,8 @@ contract Grimoire  {
         address creator;
         bool receiving_transcripts;
         bool fullfiled;
-        string original_media_metadata_uri;
-        string reference_source_media;
         string metadata_uri;
+        address[] collaborators;
         bool exists;
     }
 //Input the request_id to fetch a certain Request struct
@@ -103,45 +102,40 @@ mapping(address => bytes32[]) public address_to_revision;
 
 function createRequest(
         uint256 created_at,
-        uint256 last_updated_at,
-        bool receiving_transcripts,
-        bool fulfilled,
-        string memory original_media_metadata_uri,
-        string memory reference_source_media,
-        string memory metadata_uri
+        string memory metadata_uri,
+        address[] memory collaborators
 ) external {
     bytes32 request_id = keccak256(
         abi.encodePacked(
             msg.sender, 
             address(this),
             created_at,
-            last_updated_at,
-            original_media_metadata_uri
+            created_at,
+            metadata_uri
         )
     );
     require(id_to_request[request_id].exists == false, "This request already exists!");
      id_to_request[request_id] = Request(
         request_id,
         created_at,
-        last_updated_at,
+        created_at,
         msg.sender,
-        receiving_transcripts,
-        fulfilled,
-        original_media_metadata_uri,
-        reference_source_media,
+        true,
+        false,
         metadata_uri,
+        collaborators,
         true
     );
     address_to_request[msg.sender].push(request_id);
     emit requestCreated(
         request_id,
         created_at,
-        last_updated_at,
+        created_at,
         msg.sender,
-        receiving_transcripts,
-        fulfilled,
-        original_media_metadata_uri,
-        reference_source_media,
+        true,
+        false,
+        metadata_uri,
+        metadata_uri,
         metadata_uri
     );
 }
@@ -156,7 +150,7 @@ function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) pure privat
 
 
 
-function requestStatesUpdated(bytes32 request_id ,bool receiving_transcripts, bool fulfilled) public   {
+function updateRequestStatus(bytes32 request_id ,bool receiving_transcripts, bool fulfilled) public   {
     Request memory request = id_to_request[request_id]; 
     if (request.receiving_transcripts != receiving_transcripts){
         id_to_request[request_id].receiving_transcripts = receiving_transcripts;
@@ -315,7 +309,7 @@ function createRevision(bytes32 transcript_id, address creator, uint256 updated_
 
 }
 
-function findRevsionApproved(string[] memory transcript_revisions, string memory revision_uri) private pure returns(bool exists) {
+function findRevisionApproved(string[] memory transcript_revisions, string memory revision_uri) private pure returns(bool exists) {
     for (uint256 i; i < transcript_revisions.length; i++){
         if (keccak256(abi.encodePacked(transcript_revisions[i])) == keccak256(abi.encodePacked(revision_uri))){
             return true;
@@ -341,7 +335,7 @@ function getRevision(bytes32 revision_id) public view returns (string memory con
     require(id_to_revision[revision_id].exists == true,"Revision does not exist");
     string memory revision_uri = id_to_revision[revision_id].content_uri;
     string[] memory transcript_revisions = id_to_transcription[id_to_revision[revision_id].transcript_id].revision_metadata_uris;
-    bool revision_approved = findRevsionApproved(transcript_revisions, revision_uri);
+    bool revision_approved = findRevisionApproved(transcript_revisions, revision_uri);
     require(revision_approved == true, "Revision has not yet been approved by the owners of the transcription");
     for (uint256 i; i < transcript_revisions.length; i++){
         if (keccak256(abi.encodePacked(transcript_revisions[i])) == keccak256(abi.encodePacked(revision_uri))){
@@ -368,13 +362,13 @@ function acceptRevision(bytes32 revision_id) public {
     );
 }
 
-function proposeRevision(bytes32 transcript_id, address creator, uint256 updated_time, string memory content_uri) public {
-        if (isContributor(transcript_id, creator)){
+function proposeRevision(bytes32 transcript_id, uint256 updated_time, string memory content_uri) public {
+        if (isContributor(transcript_id, msg.sender)){
             id_to_transcription[transcript_id].revision_metadata_uris.push(content_uri);
-            createRevision(transcript_id, creator, updated_time, content_uri, revisionStates.ACCEPTED);
+            createRevision(transcript_id, msg.sender, updated_time, content_uri, revisionStates.ACCEPTED);
         }
         else {
-            createRevision(transcript_id, creator, updated_time, content_uri, revisionStates.PENDING);
+            createRevision(transcript_id, msg.sender, updated_time, content_uri, revisionStates.PENDING);
         }
 }
 }
