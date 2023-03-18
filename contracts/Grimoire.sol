@@ -99,7 +99,7 @@ mapping(bytes32 => Transcription) public id_to_transcription;
 mapping(address => bytes32[]) public address_to_transcripts;
 
 mapping(bytes32 => Revision) public id_to_revision;
-
+mapping(address => bytes32[]) public address_to_revision;
 
 function createRequest(
         uint256 created_at,
@@ -145,7 +145,7 @@ function createRequest(
         metadata_uri
     );
 }
-function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) view private returns(uint256) {
+function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) pure private returns(uint256) {
     for (uint256 i; i < id_array.length; i++){
         if (id_array[i] == id){
             return i;
@@ -304,6 +304,7 @@ function createRevision(bytes32 transcript_id, address creator, uint256 updated_
         state,
         true
     );
+    address_to_revision[creator].push(revision_id);
     emit revisionCreated(
         revision_id,
         transcript_id,
@@ -321,6 +322,19 @@ function findRevsionApproved(string[] memory transcript_revisions, string memory
         }
     }
     return false;
+}
+
+function getRevisions(address user_address) public view returns(Revision[] memory revisions) {
+    bytes32[] memory revision_address_ids = address_to_revision[user_address];
+    require(revision_address_ids.length > 0, "This address didn't publish yet or has removed its revisions");
+
+    Revision[] memory revisions = new Revision[](revision_address_ids.length);
+    for (uint256 i; i < revision_address_ids.length; i++){
+        revisions[i] = id_to_revision[revision_address_ids[i]];
+    }
+    return revisions;
+
+
 }
 
 function getRevision(bytes32 revision_id) public view returns (string memory content_uri, uint256 revision_index) {
