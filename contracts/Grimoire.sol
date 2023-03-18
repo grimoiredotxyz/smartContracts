@@ -96,6 +96,7 @@ mapping(bytes32 => Request) public id_to_request;
 mapping(address => bytes32[]) public address_to_request;
 //Input the transcription_id to fetch a certain Transcription struct
 mapping(bytes32 => Transcription) public id_to_transcription;
+mapping(address => bytes32[]) public address_to_transcripts;
 
 mapping(bytes32 => Revision) public id_to_revision;
 
@@ -217,6 +218,7 @@ function createTranscription(
         communities,
         true
     );
+    address_to_transcripts[msg.sender].push(transcription_id);
     emit transcriptCreated(
         transcription_id,
         created_at,
@@ -228,6 +230,18 @@ function createTranscription(
         id_request,
         communities);
 }
+
+function getTranscripts(address user_address) public view returns (Transcription[] memory transcripts) {
+    bytes32[] memory transcript_address_ids = address_to_transcripts[user_address];
+    require(transcript_address_ids.length > 0, "This address didn't publish yet or has removed its transcriptions");
+
+    Transcription[] memory transcripts = new Transcription[](transcript_address_ids.length);
+    for (uint256 i; i < transcript_address_ids.length; i++){
+        transcripts[i] = id_to_transcription[transcript_address_ids[i]];
+    }
+    return transcripts;
+}
+
 function getTranscript(bytes32 transcript_id) public view returns (Transcription memory request){
     Transcription memory transcript = id_to_transcription[transcript_id];
     return transcript;
@@ -239,6 +253,11 @@ function deleteTranscription(bytes32 transcription_id) public {
     require(id_to_transcription[transcription_id].exists == true, "This Transcript does not exist" );
     require(id_to_transcription[transcription_id].creator == msg.sender, "Not the owner of this Transcript");
     id_to_request[transcription_id].exists = false;
+    
+    bytes32[] memory all_transcripts_user = address_to_transcripts[id_to_transcription[transcription_id].creator];
+    uint256 index = _getAddressToIdIndex(all_transcripts_user, transcription_id);
+    address_to_transcripts[id_to_transcription[transcription_id].creator][index] = address_to_transcripts[id_to_transcription[transcription_id].creator][all_transcripts_user.length - 1];
+    address_to_transcripts[id_to_transcription[transcription_id].creator].pop();
     delete id_to_request[transcription_id];
     emit transcriptDeleted(transcription_id);
 }
