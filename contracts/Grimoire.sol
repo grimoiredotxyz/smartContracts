@@ -93,10 +93,13 @@ contract Grimoire  {
     }
 //Input the request_id to fetch a certain Request struct
 mapping(bytes32 => Request) public id_to_request;
+mapping(address => bytes32[]) public address_to_request;
 //Input the transcription_id to fetch a certain Transcription struct
 mapping(bytes32 => Transcription) public id_to_transcription;
 
 mapping(bytes32 => Revision) public id_to_revision;
+
+
 function createRequest(
         uint256 created_at,
         uint256 last_updated_at,
@@ -128,6 +131,7 @@ function createRequest(
         metadata_uri,
         true
     );
+    address_to_request[msg.sender].push(request_id);
     emit requestCreated(
         request_id,
         created_at,
@@ -140,6 +144,16 @@ function createRequest(
         metadata_uri
     );
 }
+function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) view private returns(uint256) {
+    for (uint256 i; i < id_array.length; i++){
+        if (id_array[i] == id){
+            return i;
+        }
+    }
+}
+
+
+
 
 function requestStatesUpdated(bytes32 request_id ,bool receiving_transcripts, bool fulfilled) public   {
     Request memory request = id_to_request[request_id]; 
@@ -151,7 +165,15 @@ function requestStatesUpdated(bytes32 request_id ,bool receiving_transcripts, bo
     }
     emit requestStateUpdate(request_id, id_to_request[request_id].receiving_transcripts, id_to_request[request_id].fullfiled);
 }
-
+function getRequests(address user_address) public view returns (Request[] memory requests) {
+    bytes32[] memory request_address_ids = address_to_request[user_address];
+    require(request_address_ids.length > 0, "This address didn't publish yet or has removed its requests");
+    Request[] memory requests = new Request[](request_address_ids.length);
+    for (uint256 i; i < request_address_ids.length; i++){
+        requests[i] = id_to_request[request_address_ids[i]];
+    }
+    return requests;
+}
 function getRequest(bytes32 request_id) public view returns (Request memory request){
     return id_to_request[request_id];
 }
@@ -159,6 +181,10 @@ function deleteRequest(bytes32 request_id) public {
     require(id_to_request[request_id].exists == true, "This Request does not exist" );
     require(id_to_request[request_id].creator == msg.sender, "Not the owner of this Request");
     id_to_request[request_id].exists = false;
+    bytes32[] memory all_requests_user = address_to_request[id_to_request[request_id].creator];
+    uint256 index = _getAddressToIdIndex(all_requests_user, request_id);
+    address_to_request[id_to_request[request_id].creator][index] = address_to_request[id_to_request[request_id].creator][all_requests_user.length - 1];
+    address_to_request[id_to_request[request_id].creator].pop();
     delete id_to_request[request_id];
     emit requestDeleted(request_id);
 }
