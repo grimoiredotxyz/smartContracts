@@ -30,7 +30,11 @@ contract Grimoire  {
         bytes32[] communities,
         string metadata_uri
     );*/
-
+    event transcriptApproved(
+        bytes32 request_id,
+        bytes32 transcript_id,
+        address collaborator
+    );
     event requestCreated(
         bytes32 request_id,
         uint256 created_at,
@@ -88,6 +92,7 @@ contract Grimoire  {
         bool fullfiled;
         string metadata_uri;
         address[] collaborators;
+        bytes32 id_linked_transcription;
         bool exists;
     }
 //Input the request_id to fetch a certain Request struct
@@ -114,6 +119,7 @@ function createRequest(
             metadata_uri
         )
     );
+    bytes32 transcript_id;
     require(id_to_request[request_id].exists == false, "This request already exists!");
      id_to_request[request_id] = Request(
         request_id,
@@ -124,6 +130,7 @@ function createRequest(
         false,
         metadata_uri,
         collaborators,
+        transcript_id,
         true
     );
     address_to_request[msg.sender].push(request_id);
@@ -255,6 +262,7 @@ function deleteTranscription(bytes32 transcription_id) public {
     delete id_to_request[transcription_id];
     emit transcriptDeleted(transcription_id);
 }
+
 /*If a transcript is revised, the value will be pushed into revision_metadata_uris array where we keep track of all
  revisions that way, we can easily keep track of our values from newest to oldest
 */
@@ -268,6 +276,23 @@ function isContributor(bytes32 transcription_id, address contributor) private vi
     }
     return false;
 }
+
+function isColaborator(address collaborator, address[] memory collaborators) private pure returns(bool) {
+    for (uint256 i; i < collaborators.length; i++){
+        if (collaborator == collaborators[i]){
+            return true;
+        }
+    }
+    return false;
+}
+
+function approveTranscript(bytes32 transcript_id, bytes32 request_id, address collaborator ) public {
+    require(isColaborator(collaborator ,id_to_request[request_id].collaborators) == true, "The request must be approved by a collaborator or the owner");
+    id_to_request[request_id].id_linked_transcription = transcript_id;
+    id_to_request[request_id].fullfiled = true;
+    id_to_request[request_id].receiving_transcripts = false;
+    emit transcriptApproved(transcript_id, request_id, collaborator);
+}   
 /*
 function reviseTranscription(string memory new_revision, bytes32 transcription_id, string memory reference_source_media) public {
     require(id_to_transcription[transcription_id].exists == true, "This Transcript does not exist" );
@@ -327,8 +352,6 @@ function getRevisions(address user_address) public view returns(Revision[] memor
         revisions[i] = id_to_revision[revision_address_ids[i]];
     }
     return revisions;
-
-
 }
 
 function getRevision(bytes32 revision_id) public view returns (string memory content_uri, uint256 revision_index) {
