@@ -42,9 +42,8 @@ contract Grimoire  {
         address creator,
         bool receiving_transcripts,
         bool fulfilled,
-        string original_media_metadata_uri,
-        string reference_source_media,
-        string metadata_uri
+        string metadata_uri,
+        address[] collaborators
     );
     event requestStateUpdate(bytes32 request_id, bool receiving_transcripts, bool fulfilled);
     event requestDeleted(bytes32 request_id);
@@ -105,6 +104,9 @@ mapping(address => bytes32[]) public address_to_transcripts;
 mapping(bytes32 => Revision) public id_to_revision;
 mapping(address => bytes32[]) public address_to_revision;
 
+mapping(bytes32 => bytes32[]) public request_id_to_proposals;
+mapping(bytes32 => bytes32[]) public transcript_id_to_revisions;
+
 function createRequest(
         uint256 created_at,
         string memory metadata_uri,
@@ -142,8 +144,7 @@ function createRequest(
         true,
         false,
         metadata_uri,
-        metadata_uri,
-        metadata_uri
+        collaborators
     );
 }
 function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) pure private returns(uint256) {
@@ -206,6 +207,9 @@ function createTranscription(
         )
     );
     require(id_to_transcription[transcription_id].exists == false, "This transcript already exists!");
+    if (id_to_request[id_request].exists){
+        request_id_to_proposals[id_request].push(transcription_id);
+    }
     string[] memory revision_metadata_uris;
     id_to_transcription[transcription_id] = Transcription(
         transcription_id,
@@ -315,6 +319,9 @@ function createRevision(bytes32 transcript_id, address creator, uint256 updated_
         )
     );
     require(id_to_revision[revision_id].exists == false, "This revision already exists!");
+    if (state == revisionStates.ACCEPTED){
+        transcript_id_to_revisions[transcript_id].push(revision_id);
+    }
     id_to_revision[revision_id] = Revision(
         revision_id,
         transcript_id,
@@ -380,6 +387,8 @@ function acceptRevision(bytes32 revision_id) public {
     string memory metadata_uri = id_to_revision[revision_id].content_uri;
     id_to_transcription[transcript_id].revision_metadata_uris.push(metadata_uri);
     id_to_revision[revision_id].state = revisionStates.ACCEPTED;
+    transcript_id_to_revisions[transcript_id].push(revision_id);
+
     emit revisionStateChanged(
         revision_id, transcript_id, revisionStates.ACCEPTED
     );
@@ -389,9 +398,41 @@ function proposeRevision(bytes32 transcript_id, uint256 updated_time, string mem
         if (isContributor(transcript_id, msg.sender)){
             id_to_transcription[transcript_id].revision_metadata_uris.push(content_uri);
             createRevision(transcript_id, msg.sender, updated_time, content_uri, revisionStates.ACCEPTED);
+            
         }
         else {
+
             createRevision(transcript_id, msg.sender, updated_time, content_uri, revisionStates.PENDING);
+
         }
 }
+
+function getProposalsByRequestId(bytes32 request_id ) public view returns(Revision[] memory) {
+    require(id_to_request[request_id].exists == true, "Request does not exist");
+    uint256 array_len;
+    for (uint256 i; request_id_to_proposals[request_id].length > i; i++){
+            array_len += 1;
+    }
+    Revision[] memory revisions = new Revision[](array_len);
+    uint256 counter = 0;
+    for (uint256 i; request_id_to_proposals[request_id].length > i; i++){
+
+        revisions[counter] = id_to_revision[request_id_to_proposals[request_id][i]];
+        counter += 1;
+    }   
+    return revisions;
+}
+
+function getRevisionsByTranscription(bytes32 transcription_id) public view returns(Revision[] memory) {
+    require(id_to_transcription[transcription_id].exists == true, "Request does not exist");
+    Revision[] memory revisions = new Revision[](transcript_id_to_revisions[transcription_id].length);
+    uint256 counter = 0;
+    bytes32[] memory revisions_id_array = transcript_id_to_revisions[transcription_id];
+    for (uint256 i; revisions_id_array.length > i; i++){
+            revisions[counter] = id_to_revision[revisions_id_array[i]];
+            counter += 1;
+    }   
+    return revisions;
+}
+
 }
