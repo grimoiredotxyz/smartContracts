@@ -17,19 +17,7 @@ contract Grimoire  {
     event transcriptDeleted(
         bytes32 transcript_id
     );
-/*    event transcriptRevised(
-        bytes32 transcript_id,
-        string revision,
-        address creator
-    );*/
 
-/*    event transcriptUpdated(
-        bytes32 transcript_id,
-        uint256 last_updated_at,
-        address[] contributors,
-        bytes32[] communities,
-        string metadata_uri
-    );*/
     event transcriptApproved(
         bytes32 request_id,
         bytes32 transcript_id,
@@ -79,9 +67,6 @@ contract Grimoire  {
         revisionStates state;
         bool exists;
     }
-
-    //requests are created for media that doesn't have a transcription yet, or the users arent satisfied with the current transcriptions
-
     struct Request {
         bytes32 request_id;
         uint256 created_at;
@@ -94,10 +79,8 @@ contract Grimoire  {
         bytes32 id_linked_transcription;
         bool exists;
     }
-//Input the request_id to fetch a certain Request struct
 mapping(bytes32 => Request) public id_to_request;
 mapping(address => bytes32[]) public address_to_request;
-//Input the transcription_id to fetch a certain Transcription struct
 mapping(bytes32 => Transcription) public id_to_transcription;
 mapping(address => bytes32[]) public address_to_transcripts;
 
@@ -168,15 +151,7 @@ function updateRequestStatus(bytes32 request_id ,bool receiving_transcripts, boo
     }
     emit requestStateUpdate(request_id, id_to_request[request_id].receiving_transcripts, id_to_request[request_id].fullfiled);
 }
-function getRequests(address user_address) public view returns (Request[] memory requests) {
-    bytes32[] memory request_address_ids = address_to_request[user_address];
-    require(request_address_ids.length > 0, "This address didn't publish yet or has removed its requests");
-    Request[] memory requests = new Request[](request_address_ids.length);
-    for (uint256 i; i < request_address_ids.length; i++){
-        requests[i] = id_to_request[request_address_ids[i]];
-    }
-    return requests;
-}
+
 function getRequest(bytes32 request_id) public view returns (Request memory request){
     return id_to_request[request_id];
 }
@@ -236,24 +211,12 @@ function createTranscription(
         communities);
 }
 
-function getTranscripts(address user_address) public view returns (Transcription[] memory transcripts) {
-    bytes32[] memory transcript_address_ids = address_to_transcripts[user_address];
-    require(transcript_address_ids.length > 0, "This address didn't publish yet or has removed its transcriptions");
-
-    Transcription[] memory transcripts = new Transcription[](transcript_address_ids.length);
-    for (uint256 i; i < transcript_address_ids.length; i++){
-        transcripts[i] = id_to_transcription[transcript_address_ids[i]];
-    }
-    return transcripts;
-}
 
 function getTranscript(bytes32 transcript_id) public view returns (Transcription memory request){
     Transcription memory transcript = id_to_transcription[transcript_id];
     return transcript;
 }
-/*
-    Checks if value exists and if the owner is the one that wants too delete it, then deletes the Transcript from the mapping
-*/
+
 function deleteTranscription(bytes32 transcription_id) public {
     require(id_to_transcription[transcription_id].exists == true, "This Transcript does not exist" );
     require(id_to_transcription[transcription_id].creator == msg.sender, "Not the owner of this Transcript");
@@ -267,9 +230,7 @@ function deleteTranscription(bytes32 transcription_id) public {
     emit transcriptDeleted(transcription_id);
 }
 
-/*If a transcript is revised, the value will be pushed into revision_metadata_uris array where we keep track of all
- revisions that way, we can easily keep track of our values from newest to oldest
-*/
+
 
 function isContributor(bytes32 transcription_id, address contributor) private view returns (bool) {
     address[] memory contributors = id_to_transcription[transcription_id].contributors;
@@ -291,24 +252,12 @@ function isColaborator(address collaborator, address[] memory collaborators) pri
 }
 
 function approveTranscript(bytes32 transcript_id, bytes32 request_id, address collaborator ) public {
-    require(isColaborator(collaborator ,id_to_request[request_id].collaborators) == true, "The request must be approved by a collaborator or the owner");
+    require(isColaborator(collaborator ,id_to_request[request_id].collaborators) == true, "The request must be approved");
     id_to_request[request_id].id_linked_transcription = transcript_id;
     id_to_request[request_id].fullfiled = true;
     id_to_request[request_id].receiving_transcripts = false;
     emit transcriptApproved(transcript_id, request_id, collaborator);
 }   
-/*
-function reviseTranscription(string memory new_revision, bytes32 transcription_id, string memory reference_source_media) public {
-    require(id_to_transcription[transcription_id].exists == true, "This Transcript does not exist" );
-    require(id_to_transcription[transcription_id].creator == msg.sender, "Not the owner of this Transcript");
-    id_to_transcription[transcription_id].revision_metadata_uris.push(new_revision);
-    emit transcriptRevised(
-        transcription_id,
-        new_revision,
-        id_to_transcription[transcription_id].creator
-    );
-}
-*/
 function createRevision(bytes32 transcript_id, address creator, uint256 updated_time, string memory content_uri, revisionStates state) private  {
     bytes32 revision_id = keccak256(
         abi.encodePacked(
@@ -350,23 +299,13 @@ function findRevisionApproved(string[] memory transcript_revisions, string memor
     return false;
 }
 
-function getRevisions(address user_address) public view returns(Revision[] memory revisions) {
-    bytes32[] memory revision_address_ids = address_to_revision[user_address];
-    require(revision_address_ids.length > 0, "This address didn't publish yet or has removed its revisions");
-
-    Revision[] memory revisions = new Revision[](revision_address_ids.length);
-    for (uint256 i; i < revision_address_ids.length; i++){
-        revisions[i] = id_to_revision[revision_address_ids[i]];
-    }
-    return revisions;
-}
 
 function getRevision(bytes32 revision_id) public view returns (string memory content_uri, uint256 revision_index) {
     require(id_to_revision[revision_id].exists == true,"Revision does not exist");
     string memory revision_uri = id_to_revision[revision_id].content_uri;
     string[] memory transcript_revisions = id_to_transcription[id_to_revision[revision_id].transcript_id].revision_metadata_uris;
     bool revision_approved = findRevisionApproved(transcript_revisions, revision_uri);
-    require(revision_approved == true, "Revision has not yet been approved by the owners of the transcription");
+    require(revision_approved == true, "Revision has not yet been approved");
     for (uint256 i; i < transcript_revisions.length; i++){
         if (keccak256(abi.encodePacked(transcript_revisions[i])) == keccak256(abi.encodePacked(revision_uri))){
             return (revision_uri, i);
@@ -398,32 +337,29 @@ function proposeRevision(bytes32 transcript_id, uint256 updated_time, string mem
         if (isContributor(transcript_id, msg.sender)){
             id_to_transcription[transcript_id].revision_metadata_uris.push(content_uri);
             createRevision(transcript_id, msg.sender, updated_time, content_uri, revisionStates.ACCEPTED);
-            
         }
         else {
-
             createRevision(transcript_id, msg.sender, updated_time, content_uri, revisionStates.PENDING);
-
         }
 }
 
-function getProposalsByRequestId(bytes32 request_id ) public view returns(Revision[] memory) {
+function getProposalsByRequestId(bytes32 request_id ) public view returns(Transcription[] memory) {
     require(id_to_request[request_id].exists == true, "Request does not exist");
     uint256 array_len;
     for (uint256 i; request_id_to_proposals[request_id].length > i; i++){
             array_len += 1;
     }
-    Revision[] memory revisions = new Revision[](array_len);
+    Transcription[] memory revisions = new Transcription[](array_len);
     uint256 counter = 0;
     for (uint256 i; request_id_to_proposals[request_id].length > i; i++){
 
-        revisions[counter] = id_to_revision[request_id_to_proposals[request_id][i]];
+        revisions[counter] = id_to_transcription[request_id_to_proposals[request_id][i]];
         counter += 1;
     }   
     return revisions;
 }
 
-function getRevisionsByTranscription(bytes32 transcription_id) public view returns(Revision[] memory) {
+function getRevisionsByTranscriptionId(bytes32 transcription_id) public view returns(Revision[] memory) {
     require(id_to_transcription[transcription_id].exists == true, "Request does not exist");
     Revision[] memory revisions = new Revision[](transcript_id_to_revisions[transcription_id].length);
     uint256 counter = 0;
