@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GNU General Public License v3.0 (GNU GPLv3)
 pragma solidity ^0.8.17;
 pragma abicoder v2;
 
@@ -11,7 +12,7 @@ contract Grimoire  {
         string[] revision_metadata_uris,
         string metadata_uri,
         bytes32 id_request,
-        string[] communities    
+        string[] communities
     );
 
     event transcriptDeleted(
@@ -130,7 +131,7 @@ function createRequest(
         collaborators
     );
 }
-function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) pure private returns(uint256) {
+function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) pure private returns(uint256 index) {
     for (uint256 i; i < id_array.length; i++){
         if (id_array[i] == id){
             return i;
@@ -209,6 +210,7 @@ function createTranscription(
         metadata_uri,
         id_request,
         communities);
+
 }
 
 
@@ -251,12 +253,12 @@ function isColaborator(address collaborator, address[] memory collaborators) pri
     return false;
 }
 
-function approveTranscript(bytes32 transcript_id, bytes32 request_id, address collaborator ) public {
-    require(isColaborator(collaborator ,id_to_request[request_id].collaborators) == true, "The request must be approved");
+function approveTranscript(bytes32 transcript_id, bytes32 request_id ) public {
+    require(isColaborator(msg.sender ,id_to_request[request_id].collaborators) == true, "The request must be approved");
     id_to_request[request_id].id_linked_transcription = transcript_id;
     id_to_request[request_id].fullfiled = true;
     id_to_request[request_id].receiving_transcripts = false;
-    emit transcriptApproved(transcript_id, request_id, collaborator);
+    emit transcriptApproved(transcript_id, request_id, msg.sender);
 }   
 function createRevision(bytes32 transcript_id, address creator, uint256 updated_time, string memory content_uri, revisionStates state) private  {
     bytes32 revision_id = keccak256(
@@ -268,9 +270,7 @@ function createRevision(bytes32 transcript_id, address creator, uint256 updated_
         )
     );
     require(id_to_revision[revision_id].exists == false, "This revision already exists!");
-    if (state == revisionStates.ACCEPTED){
-        transcript_id_to_revisions[transcript_id].push(revision_id);
-    }
+
     id_to_revision[revision_id] = Revision(
         revision_id,
         transcript_id,
@@ -279,6 +279,11 @@ function createRevision(bytes32 transcript_id, address creator, uint256 updated_
         state,
         true
     );
+    transcript_id_to_revisions[transcript_id].push(revision_id);
+    if (state == revisionStates.ACCEPTED){
+        acceptRevision(revision_id);
+    }
+
     address_to_revision[creator].push(revision_id);
     emit revisionCreated(
         revision_id,
@@ -325,9 +330,8 @@ function acceptRevision(bytes32 revision_id) public {
     bytes32 transcript_id = id_to_revision[revision_id].transcript_id;
     string memory metadata_uri = id_to_revision[revision_id].content_uri;
     id_to_transcription[transcript_id].revision_metadata_uris.push(metadata_uri);
+    id_to_transcription[transcript_id].metadata_uri = metadata_uri;
     id_to_revision[revision_id].state = revisionStates.ACCEPTED;
-    transcript_id_to_revisions[transcript_id].push(revision_id);
-
     emit revisionStateChanged(
         revision_id, transcript_id, revisionStates.ACCEPTED
     );
@@ -359,14 +363,23 @@ function getProposalsByRequestId(bytes32 request_id ) public view returns(Transc
     return revisions;
 }
 
-function getRevisionsByTranscriptionId(bytes32 transcription_id) public view returns(Revision[] memory) {
+function getRevisionsByTranscriptionId(bytes32 transcription_id, revisionStates state) public view returns(Revision[] memory) {
     require(id_to_transcription[transcription_id].exists == true, "Request does not exist");
-    Revision[] memory revisions = new Revision[](transcript_id_to_revisions[transcription_id].length);
+    uint256 size;
+    bytes32[] memory revisions_ids = transcript_id_to_revisions[transcription_id];
+    for (uint256 i; transcript_id_to_revisions[transcription_id].length > i; i++){
+        if (id_to_revision[revisions_ids[i]].state == state){
+            size += 1;
+        }
+        
+    }
+    Revision[] memory revisions = new Revision[](size);
     uint256 counter = 0;
-    bytes32[] memory revisions_id_array = transcript_id_to_revisions[transcription_id];
-    for (uint256 i; revisions_id_array.length > i; i++){
-            revisions[counter] = id_to_revision[revisions_id_array[i]];
+    for (uint256 i; revisions_ids.length > i; i++){
+        if (id_to_revision[revisions_ids[i]].state == state){
+            revisions[counter] = id_to_revision[revisions_ids[i]];
             counter += 1;
+        }
     }   
     return revisions;
 }
