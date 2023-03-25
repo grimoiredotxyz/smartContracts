@@ -79,7 +79,8 @@ The Grimoire contract provides the following functions:
 * Optimism Goerli -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://repo.sourcify.dev/contracts/full_match/420/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3/
 * Scroll Alpha tesnet -> 0xF91F71e2AB73a5298CAb2aD8df0EBE6e176961Ce -> https://blockscout.scroll.io/address/0xF91F71e2AB73a5298CAb2aD8df0EBE6e176961Ce
 * Filecoin Hyperspace -> 0xB293049B4940C3AF4191C8b03f79C8c0e5B39199 -> https://w3s.link/ipfs/bafkreighmwwfhnothnmw53y2fz5xesjr5d7lpxz5oavcg5h76geg42dp4m
-* zkEVM -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://explorer.public.zkevm-test.net/address/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3
+* zkEVM (testnet) -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://explorer.public.zkevm-test.net/address/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3
+* Sepolia (Taiko testnet) -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://sepolia.etherscan.io/address/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3
 
 ## License
 This project is licensed under the GNU General Public License v3.0

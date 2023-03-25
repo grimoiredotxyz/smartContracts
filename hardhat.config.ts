@@ -55,6 +55,11 @@ scroll_testnet: {
   url: 'https://alpha-rpc.scroll.io/l2',
   accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`]
 },
+sepolia: {
+  chainId: 11155111,
+  url: 'https://rpc.sepolia.org',
+  accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`]
+},
 zkEVM: {
   chainId: 1442,
   url: 'https://rpc.public.zkevm-test.net',
