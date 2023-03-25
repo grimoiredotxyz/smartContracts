@@ -57,11 +57,13 @@ The Grimoire contract provides the following functions:
 **getRevisionsByTranscriptionId**: Gets all the revisions, with a specific state made for a specific transcription proposal. It takes in two parameters - transcriptions ID, and  state, which is the state of the revisions to be retrieved. If the proposal exists, the function retrieves all the revision IDs associated with the proposal and the state specified and returns an array of Revision objects.
 
 
-## Current testnet chains where it can be deployed
+## Current testnet chains where it is deployed
 - Polygon Mumbai
 - Gnosis Chiado
 - Optimism Goerli
 - Scroll Alpha tesnet
 - Filecoin Hyperspace
+
+
 ## License
 This project is licensed under the GNU General Public License v3.0
