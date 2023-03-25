@@ -28,9 +28,15 @@ module.exports = {
     },
     goerli: {
       chainId: 420,
-      url: process.env.API_URL,
+      url: process.env.API_URL_GOERLI,
       accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`]
    },
+   optimism: {
+    chainId: 10,
+      url: process.env.API_URL_OPTIMISM,
+      accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`]
+   }
+   ,
    hyperspace: {
     chainId: 3141,
     url: "https://rpc.ankr.com/filecoin_testnet	",
@@ -48,7 +54,12 @@ scroll_testnet: {
   chainId: 534353,
   url: 'https://alpha-rpc.scroll.io/l2',
   accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`]
-}
+},
+zkEVM: {
+  chainId: 1442,
+  url: 'https://rpc.public.zkevm-test.net',
+  accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`]
+},
 },
 
 }
