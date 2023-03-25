@@ -1,7 +1,6 @@
 # Grimoire
-This repository contains a smart contract written in Solidity called Grimoire. The Grimoire contract facilitates the creation and management and emitting events of transcriptions, revisions and requests related to the transcript.
-
-To interact with Grimoire smart contract, you need to have a web3 wallet like Metamask. Once you have it installed, you can connect to the Grimoire contract address and start using it.
+Smart contract written in Solidity called Grimoire for the hachkathon project Grimoire.
+The Grimoire smart contract enables the creation and management of transcriptions, revisions and requests related to the transcript.
 
 ## Usage
 To use Grimoire, you can interact with the contract functions using a web3 provider like Metamask. Here's an example of how you can use Grimoire to create a transcript:
