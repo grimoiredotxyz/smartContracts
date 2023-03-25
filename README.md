@@ -31,7 +31,7 @@ The Grimoire contract emits the following events:
 **revisionCreated**: emitted when a new revision is created, with the revision ID, transcript ID, creator Ethereum address, content URI, and revision state.
 **revisionStateChanged**: emitted when the state of a revision is changed, with the revision ID, transcript ID, and new revision state.
 
-##Functions
+## Functions
 The Grimoire contract provides the following functions:
 
 **createRequest**: creates a new request, with the metadata URI and collaborators Ethereum addresses array.
@@ -42,6 +42,8 @@ The Grimoire contract provides the following functions:
 **deleteRequest**: deletes a request, with the request ID.
 **updateRevisionState**: Updates the state of the revision state to be either accepted or rejected, if it is accepted, the revisions content_uri will be added to transcripts revision_metadata_uris, it is called by using the revisions ID, the transcripts ID and revisions new state.
 **getRevisions**: This function returns the revision associated with the provided ID.
+**getRevisionsByTranscriptionId**: Gets all the proposals made for a specific transcription request. It takes in a bytes32 type parameter called request_id. If the request exists, the function retrieves all the transcription IDs associated with the request and returns an array of Transcription objects. Each Transcription object represents a proposal made for the transcription request.
+**getRevisionsByTranscriptionId**: Gets all the revisions, with a specific state made for a specific transcription proposal. It takes in two parameters - transcriptions ID, and  state, which is the state of the revisions to be retrieved. If the proposal exists, the function retrieves all the revision IDs associated with the proposal and the state specified and returns an array of Revision objects.
 
 ## License
 This project is licensed under the GNU General Public License v3.0
