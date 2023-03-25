@@ -6,10 +6,27 @@ To interact with Grimoire smart contract, you need to have a web3 wallet like Me
 ## Usage
 To use Grimoire, you can interact with the contract functions using a web3 provider like Metamask. Here's an example of how you can use Grimoire to create a transcript:
 
-First, you need to create a request by calling the createRequest function, providing the metadata URI and an array of collaborators Ethereum addresses.
-Once the request is created, you can create a transcription by calling the createTranscription function, providing the created request's ID, the metadata URI of the transcript, an array of contributors' Ethereum addresses, and an array of communities.
-You can then create a revision of the transcription by calling the createRevision function, providing the ID of the transcription, the content URI of the revision.
-Finally, you can update the state of the request by calling the updateRequestStatus function, providing the ID of the request, and the new status of the receiving_transcripts and fulfilled variables.
+* Create a request by calling the createRequest function, providing the metadata URI and an array of collaborators Ethereum addresses.
+
+* Create a transcription by calling the createTranscription function, providing the created request's ID, the metadata URI of the transcript, an array of contributors' Ethereum addresses, and an array of communities.
+
+* Create a revision of the transcription by calling the createRevision function, providing the ID of the transcription, the content URI of the revision.
+
+* Update the state of the request by calling the updateRequestStatus function, providing the ID of the request, and the new status of the receiving_transcripts and fulfilled variables.
+
+**This is only an example, a transcription can be created WITHOUT a request!**
+
+
+## Get started
+
+* `gh repo clone grimoiredotxyz/smartContracts`
+* `npm install`
+* `npm init`
+* `npm install --save-dev hardhat`
+* `npx hardhat compile`
+* `npm install dotenv --save` In .env get your private key from your wallet (be carefull not to accidentally push it to your github ) put it into the variable named STAGING_PRIVATE_KEY, if you are going to use Mumbai also create STAGING_INFURA_URL with the url of your Infura API and/or API_URL for goerli 
+* `npx hardhat run scripts/deploy.ts --network [one of the networks specified in hardhat.config.ts]`
+
 ## Contract API
 
 
@@ -58,11 +75,11 @@ The Grimoire contract provides the following functions:
 
 
 ## Current testnet chains where it is deployed
-- Polygon Mumbai
-- Gnosis Chiado
-- Optimism Goerli
-- Scroll Alpha tesnet
-- Filecoin Hyperspace
+* Polygon Mumbai -> 0xD9f939e8eCD876Ca0908E8CE35C109161488E895 -> https://mumbai.polygonscan.com/address/0xD9f939e8eCD876Ca0908E8CE35C109161488E895
+* Gnosis Chiado -> 0x92C410556C7AeD3C9aa6ED3552431C876770FF99 -> https://repo.sourcify.dev/contracts/full_match/10200/0x92C410556C7AeD3C9aa6ED3552431C876770FF99/ 
+* Optimism Goerli -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://repo.sourcify.dev/contracts/full_match/420/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3/
+* Scroll Alpha tesnet -> 0xF91F71e2AB73a5298CAb2aD8df0EBE6e176961Ce -> https://blockscout.scroll.io/address/0xF91F71e2AB73a5298CAb2aD8df0EBE6e176961Ce
+* Filecoin Hyperspace -> 0xB293049B4940C3AF4191C8b03f79C8c0e5B39199 -> https://w3s.link/ipfs/bafkreighmwwfhnothnmw53y2fz5xesjr5d7lpxz5oavcg5h76geg42dp4m
 
 
 ## License
