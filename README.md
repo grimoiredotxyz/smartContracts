@@ -1,8 +1,8 @@
-#Grimoire
+# Grimoire
 This repository contains a smart contract written in Solidity called Grimoire. The Grimoire contract facilitates the creation and management and emitting events of transcriptions, revisions and requests related to the transcript.
 
 
-##Table of contents
+## Table of contents
 Installation
 Usage
 Contract API
@@ -10,16 +10,16 @@ License
 Installation
 To interact with Grimoire smart contract, you need to install a web3 provider like Metamask and an Ethereum wallet like Ganache. Once you have them installed, you can connect to the Grimoire contract address on the Ethereum network and start using it.
 
-##Usage
+## Usage
 To use Grimoire, you can interact with the contract functions using a web3 provider like Metamask. Here's an example of how you can use Grimoire to create a transcript:
 
 First, you need to create a request by calling the createRequest function, providing the metadata URI and an array of collaborators Ethereum addresses.
 Once the request is created, you can create a transcription by calling the createTranscription function, providing the created request's ID, the metadata URI of the transcript, an array of contributors' Ethereum addresses, and an array of communities.
 You can then create a revision of the transcription by calling the createRevision function, providing the ID of the transcription, the content URI of the revision.
 Finally, you can update the state of the request by calling the updateRequestStatus function, providing the ID of the request, and the new status of the receiving_transcripts and fulfilled variables.
-##Contract API
+## Contract API
 
-###Events
+### Events
 The Grimoire contract emits the following events:
 
 **transcriptCreated**: emitted when a new transcript is created, with the transcript ID, creation and last updated timestamps, creator and contributors Ethereum addresses, revision metadata URIs, metadata URI, ID request, and communities array.
@@ -43,5 +43,5 @@ The Grimoire contract provides the following functions:
 **updateRevisionState**: Updates the state of the revision state to be either accepted or rejected, if it is accepted, the revisions content_uri will be added to transcripts revision_metadata_uris, it is called by using the revisions ID, the transcripts ID and revisions new state.
 **getRevisions**: This function returns the revision associated with the provided ID.
 
-License
+## License
 This project is licensed under the GNU General Public License v3.0
