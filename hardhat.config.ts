@@ -19,7 +19,7 @@ module.exports = {
     hardhat: {
     },
     mumbai: {
-      chainId: 1337,
+      chainId: 80001,
       url: process.env.STAGING_INFURA_URL,
       accounts: [`0x${process.env.STAGING_PRIVATE_KEY}`],
       gas: 2100000,

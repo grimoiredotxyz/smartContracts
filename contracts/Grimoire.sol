@@ -144,6 +144,7 @@ function _getAddressToIdIndex(bytes32[] memory id_array, bytes32 id) pure privat
 
 function updateRequestStatus(bytes32 request_id ,bool receiving_transcripts, bool fulfilled) public   {
     Request memory request = id_to_request[request_id]; 
+    require((isColaborator(msg.sender ,request.collaborators) || id_to_request[request_id].creator == msg.sender) == true, "The request must be approved");
     if (request.receiving_transcripts != receiving_transcripts){
         id_to_request[request_id].receiving_transcripts = receiving_transcripts;
     }
@@ -254,7 +255,7 @@ function isColaborator(address collaborator, address[] memory collaborators) pri
 }
 
 function approveTranscript(bytes32 transcript_id, bytes32 request_id ) public {
-    require(isColaborator(msg.sender ,id_to_request[request_id].collaborators) == true, "The request must be approved");
+    require((isColaborator(msg.sender , id_to_request[request_id].collaborators) || id_to_request[request_id].creator == msg.sender) == true, "The request must be approved");
     id_to_request[request_id].id_linked_transcription = transcript_id;
     id_to_request[request_id].fullfiled = true;
     id_to_request[request_id].receiving_transcripts = false;
