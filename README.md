@@ -83,7 +83,7 @@ The Grimoire contract provides the following functions:
 * Sepolia (Taiko testnet) -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://sepolia.etherscan.io/address/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3
 
 
-## We found a bug after recording the demo, so we had to redeploy, here are the contracts:
+## We found a bug after recording the demo, so we had to redeploy, here are the redeploys!:
 
 * Polygon Mumbai -> 0xaCA5bbE605f528bb5D101abe352cA390E7E70d09 -> https://mumbai.polygonscan.com/address/0xaCA5bbE605f528bb5D101abe352cA390E7E70d09
 * Gnosis Chiado -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://repo.sourcify.dev/contracts/full_match/10200/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3/ 
