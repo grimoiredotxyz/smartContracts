@@ -74,6 +74,17 @@ The Grimoire contract provides the following functions:
 
 
 ## Current testnet chains where it is deployed
+* Polygon Mumbai -> 0xD9f939e8eCD876Ca0908E8CE35C109161488E895 -> https://mumbai.polygonscan.com/address/0xD9f939e8eCD876Ca0908E8CE35C109161488E895
+* Gnosis Chiado -> 0x92C410556C7AeD3C9aa6ED3552431C876770FF99 -> https://repo.sourcify.dev/contracts/full_match/10200/0x92C410556C7AeD3C9aa6ED3552431C876770FF99/ 
+* Optimism Goerli -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://repo.sourcify.dev/contracts/full_match/420/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3/
+* Scroll Alpha tesnet -> 0xF91F71e2AB73a5298CAb2aD8df0EBE6e176961Ce -> https://blockscout.scroll.io/address/0xF91F71e2AB73a5298CAb2aD8df0EBE6e176961Ce
+* Filecoin Hyperspace -> 0xB293049B4940C3AF4191C8b03f79C8c0e5B39199 -> https://w3s.link/ipfs/bafkreighmwwfhnothnmw53y2fz5xesjr5d7lpxz5oavcg5h76geg42dp4m
+* zkEVM (testnet) -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://explorer.public.zkevm-test.net/address/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3
+* Sepolia (Taiko testnet) -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://sepolia.etherscan.io/address/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3
+
+
+## We found a bug after recording the demo, so we had to redeploy, here are the contracts:
+
 * Polygon Mumbai -> 0xaCA5bbE605f528bb5D101abe352cA390E7E70d09 -> https://mumbai.polygonscan.com/address/0xaCA5bbE605f528bb5D101abe352cA390E7E70d09
 * Gnosis Chiado -> 0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3 -> https://repo.sourcify.dev/contracts/full_match/10200/0x239b986D8B3bAB3e89D9586a5D83c5C0B08Fc3D3/ 
 * Optimism Goerli -> 0x4B81eBb27Fc6d07C8d0F1CD7d163E5ED809940d8 -> https://repo.sourcify.dev/contracts/full_match/420/0x4B81eBb27Fc6d07C8d0F1CD7d163E5ED809940d8/
@@ -81,6 +92,9 @@ The Grimoire contract provides the following functions:
 * Filecoin Hyperspace -> 0xB293049B4940C3AF4191C8b03f79C8c0e5B39199 -> https://w3s.link/ipfs/bafkreihwxlpopkzqgs7upogg3yqtr2gtnjx56ixvqdys56jcbcegt5dnju
 * zkEVM (testnet) -> 0x3A871Aea5151046bD2C8c8a7ae3356c0836D0a82 -> https://explorer.public.zkevm-test.net/address/0x3A871Aea5151046bD2C8c8a7ae3356c0836D0a82
 * Sepolia (Taiko testnet) -> 0x4B81eBb27Fc6d07C8d0F1CD7d163E5ED809940d8 -> https://sepolia.etherscan.io/address/0x4B81eBb27Fc6d07C8d0F1CD7d163E5ED809940d8
+
+
+
 
 ## License
 This project is licensed under the GNU General Public License v3.0
